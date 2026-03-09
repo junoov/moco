@@ -147,9 +147,9 @@ export default function HomePage() {
   const filteredComics = useMemo(() => {
     if (!data) return [];
 
-    if (activeFilter === "Manga") return data.manga.slice(0, 18);
-    if (activeFilter === "Manhwa") return data.manhwa.slice(0, 18);
-    if (activeFilter === "Manhua") return data.manhua.slice(0, 18);
+    if (activeFilter === "Manga") return data.manga;
+    if (activeFilter === "Manhwa") return data.manhwa;
+    if (activeFilter === "Manhua") return data.manhua;
 
     const merged = [...data.manhwa, ...data.manhua, ...data.manga];
     const bySlug = new Map<string, Comic>();
@@ -159,7 +159,7 @@ export default function HomePage() {
       }
     });
 
-    return Array.from(bySlug.values()).slice(0, 18);
+    return Array.from(bySlug.values());
   }, [data, activeFilter]);
 
   return (
