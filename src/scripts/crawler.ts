@@ -62,16 +62,36 @@ function randomSleep(minMs: number, maxMs: number): Promise<void> {
 // Untuk sementara keep fungsi sleep lama agar tidak merusak kode lain,
 // namun isinya bisa dimodifikasi menggunakan random logic jika mau.
 function sleep(ms: number): Promise<void> {
-  // Acak antara -20% sampai +20% dari target milisecond
-  const min = Math.max(0, ms - (ms * 0.2));
-  const max = ms + (ms * 0.2);
-  const randomize = Math.floor(Math.random() * (max - min + 1)) + min;
-  return new Promise((resolve) => setTimeout(resolve, randomize));
+  const min = Math.max(0, ms - ms * 0.2); // -20%
+  const max = ms + ms * 0.2; // +20%
+  return randomSleep(min, max);
 }
 
 function log(emoji: string, ...args: unknown[]) {
   const timestamp = new Date().toLocaleTimeString("id-ID");
   console.log(`[${timestamp}] ${emoji}`, ...args);
+}
+
+// Helper untuk Telegram Notification
+async function sendTelegramAlert(message: string) {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!botToken || !chatId) return;
+
+  try {
+    await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        parse_mode: "HTML",
+        disable_web_page_preview: true,
+      }),
+    });
+  } catch (err) {
+    console.error("Failed to send Telegram alert:", err);
+  }
 }
 
 // ======================================================
@@ -110,6 +130,11 @@ async function upsertComic(comic: Comic): Promise<string> {
       },
     });
     log("✅", `New: ${comic.title}`);
+
+    // Telegram Alert (Komik Baru)
+    const url = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    await sendTelegramAlert(`🆕 <b>Manga Baru Ditambahkan!</b>\n\n📌 <b>Judul:</b> ${comic.title}\n🏷️ <b>Tipe:</b> ${comic.type}\n\n<a href="${url}/comics/${comic.slug}">Baca Sekarang</a>`);
+
     return created.id;
   }
 }
@@ -201,6 +226,10 @@ async function upsertChapters(
         "📄",
         `  Saved: Ch.${chapter.number} (${chapterData.images.length} images)`
       );
+
+      // Telegram Alert (Chapter Baru)
+      const url = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      await sendTelegramAlert(`🔥 <b>Chapter Baru Rilis!</b>\n\n📌 <b>Manga:</b> ${comicSlug}\n📖 <b>Chapter:</b> ${chapter.number}\n\n<a href="${url}/comics/${comicSlug}/${chapter.slug}">Baca Chapter ${chapter.number}</a>`);
     } else {
       log("⚠️", `  No images for: ${chapter.slug}`);
     }
