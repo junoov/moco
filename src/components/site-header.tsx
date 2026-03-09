@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
+import { SearchBar } from "./search-bar";
 
 export function SiteHeader() {
   return (
@@ -15,6 +16,7 @@ export function SiteHeader() {
           </div>
         </Link>
         <nav style={{ display: "flex", gap: "1.2rem", alignItems: "center" }}>
+           <SearchBar />
            <Link href="/" className="muted hover:text-[var(--text-strong)] transition-colors text-sm font-medium">Home</Link>
            <Link href="#" className="muted hover:text-[var(--text-strong)] transition-colors text-sm font-medium">Bookmarks</Link>
         </nav>
