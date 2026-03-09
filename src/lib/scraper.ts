@@ -6,15 +6,27 @@ const API_DOMAIN = "https://api.komiku.org";
 const DEFAULT_STATUS = "Ongoing";
 const DEFAULT_TYPE = "Manga";
 
-const headers = {
-  "User-Agent":
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-  Accept:
-    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-  "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-  Referer: TARGET_DOMAIN,
-  Origin: TARGET_DOMAIN,
-};
+// Array berisi ragam Browser (Desktop, Mobile, OS yang berbeda)
+const USER_AGENTS = [
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/122.0.0.0 Safari/537.36",
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0",
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0",
+];
+
+// Helper untuk mengambil header acak tiap ada pergerakan request
+function getRandomHeaders() {
+  const randomAgent = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
+  return {
+    "User-Agent": randomAgent,
+    Accept:
+      "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+    Referer: TARGET_DOMAIN,
+    Origin: TARGET_DOMAIN,
+  };
+}
 
 function cleanText(value: string | undefined | null): string {
   return (value || "").replace(/\s+/g, " ").trim();
@@ -129,7 +141,7 @@ function dedupeComics(comics: Comic[]): Comic[] {
 
 async function fetchHtml(url: string): Promise<string> {
   const response = await axios.get(url, {
-    headers,
+    headers: getRandomHeaders(),
     timeout: 15000,
     validateStatus: (status) => status >= 200 && status < 500,
   });

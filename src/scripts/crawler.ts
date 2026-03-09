@@ -52,8 +52,21 @@ let totalScrapedCount = 0; // tracker jumlah manga yang di scrape di sesi ini
 // ======================================================
 // Helpers
 // ======================================================
-function sleep(ms: number): Promise<void> {
+
+// Helper untuk Random Delay: Biar bot terlihat seperti manusia (contoh: acak 1.5 detik s/d 3 detik)
+function randomSleep(minMs: number, maxMs: number): Promise<void> {
+  const ms = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Untuk sementara keep fungsi sleep lama agar tidak merusak kode lain,
+// namun isinya bisa dimodifikasi menggunakan random logic jika mau.
+function sleep(ms: number): Promise<void> {
+  // Acak antara -20% sampai +20% dari target milisecond
+  const min = Math.max(0, ms - (ms * 0.2));
+  const max = ms + (ms * 0.2);
+  const randomize = Math.floor(Math.random() * (max - min + 1)) + min;
+  return new Promise((resolve) => setTimeout(resolve, randomize));
 }
 
 function log(emoji: string, ...args: unknown[]) {
