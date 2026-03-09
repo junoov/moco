@@ -226,10 +226,6 @@ async function upsertChapters(
         "📄",
         `  Saved: Ch.${chapter.number} (${chapterData.images.length} images)`
       );
-
-      // Telegram Alert (Chapter Baru)
-      const url = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-      await sendTelegramAlert(`🔥 <b>Chapter Baru Rilis!</b>\n\n📌 <b>Manga:</b> ${comicSlug}\n📖 <b>Chapter:</b> ${chapter.number}\n\n<a href="${url}/comics/${comicSlug}/${chapter.slug}">Baca Chapter ${chapter.number}</a>`);
     } else {
       log("⚠️", `  No images for: ${chapter.slug}`);
     }
@@ -241,6 +237,12 @@ async function upsertChapters(
     "📊",
     `  Chapters: ${saved} saved, ${skipped} skipped (already exist)`
   );
+
+  // Telegram Alert (Ringkasan Setelah Selesai 1 Manga)
+  if (saved > 0) {
+    const url = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    await sendTelegramAlert(`🔥 <b>Update Chapter Manga!</b>\n\n📌 <b>Manga:</b> ${comicSlug}\n✅ Berhasil menyedot <b>${saved}</b> chapter baru!\n\n<a href="${url}/comics/${comicSlug}">Lihat Manga</a>`);
+  }
 }
 
 // ======================================================
