@@ -299,6 +299,7 @@ async function crawlHomepage() {
   const allComics = [
     ...homepage.trending,
     ...homepage.manhwa,
+    ...homepage.manhua,
     ...homepage.manga,
   ];
 
