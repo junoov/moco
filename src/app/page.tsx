@@ -69,10 +69,15 @@ export default function HomePage() {
     };
   }, []);
 
-  const latest = useMemo(() => {
-    if (!data) {
-      return [] as Comic[];
-    }
+  const [activeFilter, setActiveFilter] = useState("All");
+  const filters = ["All", "Manga", "Manhwa", "Manhua"];
+
+  const filteredComics = useMemo(() => {
+    if (!data) return [];
+
+    if (activeFilter === "Manga") return data.manga.slice(0, 18);
+    if (activeFilter === "Manhwa") return data.manhwa.slice(0, 18);
+    if (activeFilter === "Manhua") return data.manhua.slice(0, 18);
 
     const merged = [...data.manhwa, ...data.manhua, ...data.manga];
     const bySlug = new Map<string, Comic>();
@@ -82,8 +87,8 @@ export default function HomePage() {
       }
     });
 
-    return Array.from(bySlug.values()).slice(0, 12);
-  }, [data]);
+    return Array.from(bySlug.values()).slice(0, 18);
+  }, [data, activeFilter]);
 
   return (
     <section className="page-wrap">
@@ -150,13 +155,38 @@ export default function HomePage() {
           </section>
 
           <section className="stagger" style={{ marginTop: "1.4rem" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem", marginBottom: "1.2rem" }}>
+              {filters.map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setActiveFilter(f)}
+                  className="hover:opacity-80"
+                  style={{
+                    background: activeFilter === f ? "var(--text-strong)" : "var(--surface)",
+                    color: activeFilter === f ? "var(--bg)" : "var(--text-muted)",
+                    border: "1px solid var(--border)",
+                    padding: "0.4rem 1.2rem",
+                    borderRadius: "20px",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+
             <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "baseline" }}>
-              <h2 className="section-title">Latest across formats</h2>
-              <p className="muted" style={{ margin: 0 }}>{latest.length} titles</p>
+              <h2 className="section-title">
+                {activeFilter === "All" ? "Latest across formats" : `${activeFilter} Terbaru`}
+              </h2>
+              <p className="muted" style={{ margin: 0 }}>{filteredComics.length} titles</p>
             </div>
 
             <div style={{ display: "grid", gap: "0.7rem", marginTop: "0.85rem" }}>
-              {latest.map((comic) => (
+              {filteredComics.map((comic) => (
                 <Link
                   key={comic.slug}
                   href={`/comics/${comic.slug}`}
