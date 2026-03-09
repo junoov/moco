@@ -388,6 +388,9 @@ async function main() {
 
   log("🚀", "Manga Reader Crawler Started");
   log("⏰", `Waktu mulai: ${new Date().toLocaleString("id-ID")}`);
+  
+  // Telegram Alert: Startup
+  await sendTelegramAlert(`🤖 <b>Bot Crawler Online!</b>\n\n✅ VPS / Mesin berhasil menyalakan mesin penyedot komik\n⏰ Mulai: ${new Date().toLocaleString("id-ID")}`);
 
   const startTime = Date.now();
 
