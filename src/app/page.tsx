@@ -25,7 +25,79 @@ interface HomepageData {
 }
 
 function proxyImage(url: string): string {
+  if (!url) return "";
   return `/api/img?url=${encodeURIComponent(url)}`;
+}
+
+function ComicCard({ comic }: { comic: Comic }) {
+  const typeText = comic.type || "Manga";
+  const typeColor = typeText.toLowerCase() === 'manhwa' 
+    ? 'var(--manhwa-badge)' 
+    : typeText.toLowerCase() === 'manhua' 
+    ? 'var(--manhua-badge)' 
+    : 'var(--manga-badge)';
+    
+  return (
+    <Link
+      href={`/comics/${comic.slug}`}
+      className="panel"
+      style={{ 
+        display: "block", 
+        padding: 0, 
+        transition: "transform 200ms ease, box-shadow 200ms ease",
+        textDecoration: "none",
+        color: "inherit"
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)';
+        (e.currentTarget as HTMLElement).style.boxShadow = '0 12px 20px -5px rgba(0,0,0,0.3)';
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.transform = 'none';
+        (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow)';
+      }}
+    >
+      <div style={{ position: "relative", width: "100%", paddingBottom: "140%", overflow: "hidden", borderTopLeftRadius: "var(--radius-lg)", borderTopRightRadius: "var(--radius-lg)" }}>
+        <img
+          src={proxyImage(comic.coverImage)}
+          alt={comic.title}
+          loading="lazy"
+          style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover" }}
+        />
+        
+        {/* Type Badge */}
+        <div style={{ position: "absolute", top: "6px", left: "6px", background: typeColor, color: "#fff", fontSize: "0.55rem", fontWeight: 700, padding: "2px 6px", borderRadius: "4px", textTransform: "uppercase", outline: "2px solid var(--bg-2)" }}>
+          {typeText}
+        </div>
+        
+        {/* Status Badge */}
+        {comic.status && comic.status.toLowerCase() === "ongoing" && (
+          <div style={{ position: "absolute", top: "6px", right: "6px", background: "var(--success)", color: "#fff", fontSize: "0.55rem", fontWeight: 700, padding: "2px 6px", borderRadius: "4px", textTransform: "uppercase" }}>
+            ONG
+          </div>
+        )}
+        
+        {/* Bottom Metadata Overlay */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%)", padding: "30px 6px 6px", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          <span style={{ color: "#fff", fontSize: "0.65rem", fontWeight: 600 }}>
+            {comic.totalChapters > 0 ? `${comic.totalChapters} Chapter` : "? Chapter"}
+          </span>
+          {comic.views > 0 && (
+             <span style={{ color: "var(--text-dim)", fontSize: "0.65rem", display: "flex", alignItems: "center", gap: "3px" }}>
+               👁 {comic.views > 1000 ? (comic.views / 1000).toFixed(1) + 'K' : comic.views}
+             </span>
+          )}
+        </div>
+      </div>
+      
+      {/* Title section */}
+      <div style={{ padding: "8px" }}>
+        <h3 style={{ margin: 0, fontSize: "0.85rem", fontWeight: 600, color: "var(--text-strong)", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: "2.2rem" }}>
+          {comic.title}
+        </h3>
+      </div>
+    </Link>
+  );
 }
 
 export default function HomePage() {
@@ -125,31 +197,12 @@ export default function HomePage() {
               style={{
                 marginTop: "0.9rem",
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(156px, 1fr))",
-                gap: "0.85rem",
+                gridTemplateColumns: "repeat(auto-fill, minmax(145px, 1fr))",
+                gap: "1rem",
               }}
             >
               {data.trending.slice(0, 10).map((comic) => (
-                <Link
-                  href={`/comics/${comic.slug}`}
-                  key={comic.id}
-                  className="panel"
-                  style={{ padding: "0.65rem", display: "block", transition: "transform 160ms ease" }}
-                >
-                  <img
-                    src={proxyImage(comic.coverImage)}
-                    alt={comic.title}
-                    className="cover"
-                    loading="lazy"
-                    style={{ width: "100%", height: "220px" }}
-                  />
-                  <p style={{ margin: "0.65rem 0 0", color: "var(--text-strong)", fontSize: "0.92rem", fontWeight: 600 }}>
-                    {comic.title}
-                  </p>
-                  <p className="muted" style={{ margin: "0.35rem 0 0", fontSize: "0.78rem" }}>
-                    {comic.type} · {comic.totalChapters} ch
-                  </p>
-                </Link>
+                <ComicCard key={comic.id} comic={comic} />
               ))}
             </div>
           </section>
@@ -185,37 +238,16 @@ export default function HomePage() {
               <p className="muted" style={{ margin: 0 }}>{filteredComics.length} titles</p>
             </div>
 
-            <div style={{ display: "grid", gap: "0.7rem", marginTop: "0.85rem" }}>
+            <div 
+              style={{ 
+                marginTop: "1.2rem",
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(145px, 1fr))",
+                gap: "1rem",
+              }}
+            >
               {filteredComics.map((comic) => (
-                <Link
-                  key={comic.slug}
-                  href={`/comics/${comic.slug}`}
-                  className="panel"
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "72px 1fr auto",
-                    gap: "0.8rem",
-                    alignItems: "center",
-                    padding: "0.6rem",
-                  }}
-                >
-                  <img
-                    src={proxyImage(comic.coverImage)}
-                    alt={comic.title}
-                    className="cover"
-                    loading="lazy"
-                    style={{ width: "72px", height: "96px" }}
-                  />
-                  <div>
-                    <p style={{ margin: 0, color: "var(--text-strong)", fontWeight: 600 }}>{comic.title}</p>
-                    <p className="muted" style={{ margin: "0.35rem 0 0", fontSize: "0.82rem" }}>
-                      {comic.type} · {comic.status || "Unknown status"}
-                    </p>
-                  </div>
-                  <span className="cta cta--ghost" style={{ minHeight: "2.3rem", paddingInline: "0.9rem" }}>
-                    View
-                  </span>
-                </Link>
+                <ComicCard key={comic.slug} comic={comic} />
               ))}
             </div>
           </section>
