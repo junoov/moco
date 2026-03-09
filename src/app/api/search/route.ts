@@ -26,7 +26,7 @@ export async function GET(request: Request) {
     });
 
     if (dbResults.length > 0) {
-      const results = dbResults.map(c => ({
+      const results = dbResults.map((c: any) => ({
         ...c,
         coverImage: c.coverUrl || "",
         views: c.totalViews,
