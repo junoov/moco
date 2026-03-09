@@ -34,11 +34,11 @@ sudo npm install -g pm2
 
 Sekarang, ambil source code `manga-reader` kamu dari Github ke dalam VPS. Posisinya bebas, tapi umumnya kita taruh di folder `/var/www/`.
 
-**1. Clone Project (Ganti link URL repomu):**
+**1. Clone Project:**
 ```bash
 cd ~
-git clone https://github.com/USERNAME_KAMU/manga-reader.git
-cd manga-reader
+git clone https://github.com/junoov/moco.git
+cd moco
 ```
 
 **2. Install semua library:**
