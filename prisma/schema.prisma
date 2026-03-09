@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// ------------------------------------------------------
+// SCHEMA UNTUK MANGA READER CLONE
+// ------------------------------------------------------
+
+// 1. Tabel Utama Komik (Manga/Manhwa)
+model Comic {
+  id            String    @id @default(cuid()) // Pakai CUID seperti komikloe
+  title         String
+  slug          String    @unique // cth: solo-leveling
+  description   String?   @db.Text
+  coverUrl      String?   // URL proxy gambar cover
+  author        String?
+  status        String    @default("ONGOING") // ONGOING, COMPLETED
+  type          String    @default("MANGA")   // MANGA, MANHWA, MANHUA
+  rating        Float     @default(0)
+  totalViews    Int       @default(0)
+  sourceUrl     String    // URL web asli yg di-scrape (untuk referensi bot)
+  
+  // Relasi
+  chapters      Chapter[]
+  genres        Genre[]   @relation("ComicGenres")
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// 2. Tabel Chapter Komik
+model Chapter {
+  id            String    @id @default(cuid())
+  comicId       String
+  number        Float     // Float agar bisa "Chapter 10.5"
+  slug          String    // cth: chapter-10-5
+  title         String?   // Judul Opsional chapter (cth: "Kembalinya Sang Raja")
+  
+  // Karena kita HANYA MENYIMPAN TEKS (URL Gambar), kita menaruhnya di array JSON
+  images        Json      // Array berisi URL string: ["url1.jpg", "url2.jpg"]
+  
+  // Relasi balik ke Komik
+  comic         Comic     @relation(fields: [comicId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now())
+  
+  @@unique([comicId, number]) // Nomor chapter tidak boleh ganda per komik
+}
+
+// 3. Tabel Genre (Tags)
+model Genre {
+  id            String    @id @default(cuid())
+  name          String    @unique // cth: "Action", "Isekai"
+  slug          String    @unique
+  
+  // Relasi balik (Banyak Komik punya Banyak Genre)
+  comics        Comic[]   @relation("ComicGenres")
+}
