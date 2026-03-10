@@ -68,20 +68,9 @@ export function SearchBar() {
   };
 
   return (
-    <div ref={containerRef} style={{ position: "relative", zIndex: 50 }}>
+    <div ref={containerRef} className="search-box">
       {/* Search Input Box */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.5rem",
-          background: "var(--surface)",
-          border: "1px solid var(--border)",
-          padding: "0.4rem 0.8rem",
-          borderRadius: "8px",
-          width: "250px",
-        }}
-      >
+      <div className="search-box__input-wrap">
         <Search size={16} color="var(--text-muted)" />
         <input
           type="text"
@@ -91,35 +80,14 @@ export function SearchBar() {
           onFocus={() => {
             if (query.length > 0) setIsOpen(true);
           }}
-          style={{
-            background: "transparent",
-            border: "none",
-            outline: "none",
-            color: "var(--text)",
-            fontSize: "0.9rem",
-            width: "100%",
-          }}
+          className="search-box__input"
         />
         {loading && <Loader2 size={14} className="animate-spin" color="var(--text-muted)" />}
       </div>
 
       {/* Dropdown Results */}
       {isOpen && query.length > 0 && (
-        <div
-          style={{
-            position: "absolute",
-            top: "120%",
-            right: 0,
-            width: "320px",
-            background: "var(--surface)",
-            border: "1px solid var(--border)",
-            borderRadius: "8px",
-            boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
+        <div className="search-box__dropdown">
           {loading && results.length === 0 ? (
             <div style={{ padding: "1rem", textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem" }}>
               Mencari komik...

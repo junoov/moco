@@ -1,72 +1,81 @@
-"use client";
-
-import { useEffect, useState, use } from "react";
 import Link from "next/link";
-import { ArrowLeft, Clock, Eye, Layers, Star, BookOpen } from "lucide-react";
-import { ComicDetail } from "@/lib/scraper";
+import { ArrowLeft, Layers, BookOpen } from "lucide-react";
+import { ComicDetail, getComicDetail } from "@/lib/scraper";
+import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
+import { HistoryTracker } from "@/components/history-tracker";
+import { prisma } from "@/lib/prisma";
 
 function proxyImage(url: string): string {
   if (!url) return "";
   return `/api/img?url=${encodeURIComponent(url)}`;
 }
 
-export default function ComicDetailPage({
+async function getComicFromDb(slug: string): Promise<ComicDetail | null> {
+  const dbComic = await prisma.comic.findUnique({
+    where: { slug },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      coverUrl: true,
+      type: true,
+      status: true,
+      rating: true,
+      totalViews: true,
+      description: true,
+      author: true,
+      genres: {
+        select: { name: true },
+      },
+      chapters: {
+        orderBy: { number: "desc" },
+        select: {
+          number: true,
+          slug: true,
+          title: true,
+        },
+      },
+    },
+  });
+
+  if (!dbComic) {
+    return null;
+  }
+
+  return {
+    id: dbComic.id,
+    title: dbComic.title,
+    slug: dbComic.slug,
+    coverImage: dbComic.coverUrl || "",
+    type: dbComic.type,
+    status: dbComic.status,
+    rating: dbComic.rating,
+    views: dbComic.totalViews,
+    totalChapters: dbComic.chapters.length,
+    synopsis: dbComic.description || "",
+    author: dbComic.author || "Unknown",
+    genres: dbComic.genres.map((genre) => genre.name),
+    chapters: dbComic.chapters.map((chapter) => ({
+      number: chapter.number,
+      slug: chapter.slug,
+      title: chapter.title || `Chapter ${chapter.number}`,
+    })),
+  };
+}
+
+export default async function ComicDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = use(params);
-  const [comic, setComic] = useState<ComicDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { slug } = await params;
+  const comic = (await getComicFromDb(slug)) ?? (await getComicDetail(slug));
 
-  useEffect(() => {
-    let mounted = true;
-
-    async function fetchComic() {
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/comics/${slug}`);
-        const json = await res.json();
-
-        if (!res.ok || !json.status) {
-          throw new Error(json.message || "Failed to load comic");
-        }
-
-        if (mounted) {
-          setComic(json.data);
-        }
-      } catch (err: any) {
-        if (mounted) {
-          setError(err.message);
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    fetchComic();
-    return () => {
-      mounted = false;
-    };
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <div className="page-wrap flex flex-col items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin mb-4" />
-        <p className="muted">Summoning comic data...</p>
-      </div>
-    );
-  }
-
-  if (error || !comic) {
+  if (!comic) {
     return (
       <div className="page-wrap">
         <div className="panel p-6 border-red-900/50 bg-red-950/20 text-center">
-          <p className="text-red-400 font-medium mb-4">{error || "Comic not found"}</p>
+          <p className="text-red-400 font-medium mb-4">Comic not found</p>
           <Link href="/" className="cta cta--ghost inline-flex">Return Home</Link>
         </div>
       </div>
@@ -75,6 +84,19 @@ export default function ComicDetailPage({
 
   return (
     <div className="page-wrap pb-20">
+      <HistoryTracker
+        comic={{
+          id: comic.id,
+          slug: comic.slug,
+          title: comic.title,
+          coverUrl: comic.coverImage || null,
+          type: comic.type,
+          status: comic.status,
+          totalViews: comic.views,
+          totalChapters: comic.totalChapters,
+        }}
+      />
+
       <Link href="/" className="inline-flex items-center gap-2 text-[var(--text-dim)] hover:text-white mb-6 transition-colors font-medium text-sm">
         <ArrowLeft size={16} /> Back to catalog
       </Link>
@@ -134,18 +156,30 @@ export default function ComicDetailPage({
             ))}
           </div>
           
-          <div className="mt-auto flex gap-3">
-             {comic.chapters.length > 0 && (
-                <Link 
-                  href={`/comics/${comic.slug}/${comic.chapters[comic.chapters.length - 1]?.slug}`}
-                  className="cta flex-1 shadow-lg shadow-orange-500/20"
-                >
-                  Read First Chapter
-                </Link>
-             )}
-          </div>
-        </div>
-      </div>
+           <div className="mt-auto flex gap-3">
+              {comic.chapters.length > 0 && (
+                 <Link 
+                   href={`/comics/${comic.slug}/${comic.chapters[comic.chapters.length - 1]?.slug}`}
+                   className="cta flex-1 shadow-lg shadow-orange-500/20"
+                 >
+                   Read First Chapter
+                 </Link>
+              )}
+              <BookmarkToggleButton
+                comic={{
+                  id: comic.id,
+                  slug: comic.slug,
+                  title: comic.title,
+                  coverUrl: comic.coverImage || null,
+                  type: comic.type,
+                  status: comic.status,
+                  totalViews: comic.views,
+                  totalChapters: comic.totalChapters,
+                }}
+              />
+           </div>
+         </div>
+       </div>
 
       {/* Synopsis Section */}
       <section className="mb-10">
@@ -171,7 +205,7 @@ export default function ComicDetailPage({
         <div className="panel overflow-hidden">
           <div className="max-h-[500px] overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "var(--line) transparent" }}>
             <ul className="divide-y divide-[var(--line-soft)] m-0 p-0 list-none">
-              {comic.chapters.map((ch, idx) => (
+              {comic.chapters.map((ch) => (
                 <li key={ch.slug} className="group flex">
                   <Link 
                     href={`/comics/${comic.slug}/${ch.slug}`}

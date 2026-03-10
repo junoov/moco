@@ -1,10 +1,7 @@
 import Link from "next/link";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { getPaginatedComics } from "@/lib/comic-data";
 import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
-import { ReadingHistorySection } from "@/components/reading-history-section";
-import { getHomepageData } from "@/lib/comic-data";
-
-// SSR: Render di server setiap request (tidak perlu koneksi DB saat build)
-export const dynamic = "force-dynamic";
 
 interface Comic {
   id: string;
@@ -33,10 +30,7 @@ function ComicCard({ comic }: { comic: Comic }) {
         : "var(--manga-badge)";
 
   return (
-    <Link
-      href={`/comics/${comic.slug}`}
-      className="comic-card panel"
-    >
+    <Link href={`/comics/${comic.slug}`} className="comic-card panel">
       <div className="comic-card__cover">
         <img
           src={proxyImage(comic.coverUrl)}
@@ -45,19 +39,14 @@ function ComicCard({ comic }: { comic: Comic }) {
           className="comic-card__img"
         />
 
-        {/* Type Badge */}
         <span className="comic-card__badge comic-card__badge--type" style={{ background: typeColor }}>
           {typeText}
         </span>
 
-        {/* Status Badge */}
         {comic.status && comic.status.toLowerCase() === "ongoing" && (
-          <span className="comic-card__badge comic-card__badge--status">
-            ONG
-          </span>
+          <span className="comic-card__badge comic-card__badge--status">ONG</span>
         )}
 
-        {/* Bottom Overlay */}
         <div className="comic-card__overlay">
           <span className="comic-card__chapters">
             {(comic.totalChapters ?? 0) > 0
@@ -73,8 +62,6 @@ function ComicCard({ comic }: { comic: Comic }) {
           )}
         </div>
       </div>
-
-      {/* Title */}
       <div className="comic-card__info">
         <div className="comic-card__info-row">
           <h3 className="comic-card__title">{comic.title}</h3>
@@ -97,56 +84,78 @@ function ComicCard({ comic }: { comic: Comic }) {
   );
 }
 
-// ============================================================
-// Server Component — Data di-fetch di server, bukan di browser!
-// ============================================================
-export default async function HomePage() {
-  const data = await getHomepageData();
-  const trendingList: Comic[] = data.trending;
-  const latestUpdates: Comic[] = data.latestUpdates.slice(0, 18);
+export default async function ComicsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
+  const parsedPage = Number.parseInt(params.page || "1", 10);
+
+  const { comics, currentPage, totalPages, totalComics, pageSize } =
+    await getPaginatedComics(parsedPage, 24);
+
+  const fromIndex = totalComics === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const toIndex = Math.min(currentPage * pageSize, totalComics);
 
   return (
     <section className="page-wrap">
       <div className="panel stagger" style={{ padding: "1.4rem", marginBottom: "1.2rem" }}>
-        <p className="signal" style={{ margin: 0 }}>Live catalog</p>
+        <p className="signal" style={{ margin: 0 }}>Complete catalog</p>
         <h1 className="section-title" style={{ marginTop: "0.45rem" }}>
-          Discover what readers are binging tonight
+          Semua Komik
         </h1>
         <p className="muted" style={{ marginTop: "0.45rem", maxWidth: "58ch" }}>
-          {data.totalComics} judul manga, manhwa, dan manhua tersedia.
+          Menampilkan {fromIndex}-{toIndex} dari {totalComics} judul.
         </p>
       </div>
 
-      {/* Trending Section */}
       <section className="stagger" style={{ marginTop: "1.2rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "baseline" }}>
-          <h2 className="section-title">Popular today</h2>
-          <Link href="/comics" className="cta cta--ghost" style={{ minHeight: "2.2rem", padding: "0.3rem 0.95rem", fontSize: "0.8rem" }}>
-            Lihat Semua
-          </Link>
+          <h2 className="section-title">Catalog Page {currentPage}</h2>
+          <p className="muted" style={{ margin: 0 }}>{comics.length} titles</p>
         </div>
-        <div className="comic-grid" style={{ marginTop: "0.9rem" }}>
-          {trendingList.map((comic) => (
-            <ComicCard key={comic.id} comic={comic} />
-          ))}
+
+        {comics.length > 0 ? (
+          <div className="comic-grid" style={{ marginTop: "0.9rem" }}>
+            {comics.map((comic) => (
+              <ComicCard key={comic.id} comic={comic} />
+            ))}
+          </div>
+        ) : (
+          <div className="panel" style={{ padding: "1rem", marginTop: "0.9rem", textAlign: "center" }}>
+            <p className="muted" style={{ margin: 0 }}>Belum ada komik untuk halaman ini.</p>
+          </div>
+        )}
+
+        <div className="comics-pager">
+          {currentPage > 1 ? (
+            <Link href={`/comics?page=${currentPage - 1}`} className="cta cta--ghost">
+              <ArrowLeft size={16} style={{ marginRight: "0.35rem" }} />
+              Prev
+            </Link>
+          ) : (
+            <span className="cta cta--ghost comics-pager__disabled">
+              <ArrowLeft size={16} style={{ marginRight: "0.35rem" }} />
+              Prev
+            </span>
+          )}
+
+          <p className="muted comics-pager__label">Page {currentPage} / {totalPages}</p>
+
+          {currentPage < totalPages ? (
+            <Link href={`/comics?page=${currentPage + 1}`} className="cta">
+              Next
+              <ArrowRight size={16} style={{ marginLeft: "0.35rem" }} />
+            </Link>
+          ) : (
+            <span className="cta comics-pager__disabled">
+              Next
+              <ArrowRight size={16} style={{ marginLeft: "0.35rem" }} />
+            </span>
+          )}
         </div>
       </section>
-
-      <section className="stagger" style={{ marginTop: "1.5rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "baseline" }}>
-          <h2 className="section-title">Latest updates</h2>
-          <Link href="/comics" className="muted hover:text-[var(--text-strong)] transition-colors text-sm font-medium">
-            View all
-          </Link>
-        </div>
-        <div className="comic-grid" style={{ marginTop: "0.9rem" }}>
-          {latestUpdates.map((comic) => (
-            <ComicCard key={comic.id} comic={comic} />
-          ))}
-        </div>
-      </section>
-
-      <ReadingHistorySection />
     </section>
   );
 }

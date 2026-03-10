@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useMemo } from "react";
+import { BookmarkToggleButton } from "@/components/bookmark-toggle-button";
 
 interface Comic {
   id: string;
@@ -63,7 +64,22 @@ function ComicCard({ comic }: { comic: Comic }) {
         </div>
       </div>
       <div className="comic-card__info">
-        <h3 className="comic-card__title">{comic.title}</h3>
+        <div className="comic-card__info-row">
+          <h3 className="comic-card__title">{comic.title}</h3>
+          <BookmarkToggleButton
+            compact
+            comic={{
+              id: comic.id,
+              slug: comic.slug,
+              title: comic.title,
+              coverUrl: comic.coverUrl,
+              type: comic.type,
+              status: comic.status,
+              totalViews: comic.totalViews,
+              totalChapters: comic.totalChapters ?? 0,
+            }}
+          />
+        </div>
       </div>
     </Link>
   );

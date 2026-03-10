@@ -3,7 +3,7 @@ import { getComicDetail } from "@/lib/scraper";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
@@ -12,12 +12,29 @@ export async function GET(
     // Coba cari dari database dulu
     const dbComic = await prisma.comic.findUnique({
       where: { slug },
-      include: {
-        genres: true,
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        coverUrl: true,
+        type: true,
+        status: true,
+        rating: true,
+        totalViews: true,
+        description: true,
+        author: true,
+        genres: {
+          select: { name: true },
+        },
         chapters: {
-          orderBy: { number: 'desc' }
-        }
-      }
+          orderBy: { number: "desc" },
+          select: {
+            number: true,
+            slug: true,
+            title: true,
+          },
+        },
+      },
     });
 
     if (dbComic) {
@@ -28,13 +45,13 @@ export async function GET(
         views: dbComic.totalViews,
         synopsis: dbComic.description || "",
         author: dbComic.author || "Unknown",
-        genres: dbComic.genres.map((g: any) => g.name),
+        genres: dbComic.genres.map((g) => g.name),
         totalChapters: dbComic.chapters.length,
-        chapters: dbComic.chapters.map((ch: any) => ({
+        chapters: dbComic.chapters.map((ch) => ({
           number: ch.number,
           slug: ch.slug,
-          title: ch.title || `Chapter ${ch.number}`
-        }))
+          title: ch.title || `Chapter ${ch.number}`,
+        })),
       };
       
       return NextResponse.json({ status: true, data: comicDetail });
