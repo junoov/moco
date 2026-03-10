@@ -2,9 +2,8 @@ import { NextResponse } from "next/server";
 import { getHomepage, getComicsList } from "@/lib/scraper";
 import { prisma } from "@/lib/prisma";
 
-// 🔥 ISR Caching: Biarkan Vercel me-load cepat (dari Edge/Cache),
-// update data di background setiap 1 Menit agar tidak lemot nge-query ke Database.
-export const revalidate = 60;
+// API route ini selalu dinamis karena menggunakan request.url
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   try {
