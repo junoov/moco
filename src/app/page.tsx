@@ -112,7 +112,7 @@ export default function HomePage() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch("/api/comics", { cache: "no-store" });
+        const response = await fetch("/api/comics");
         const json = (await response.json()) as
           | { status: true; data: HomepageData }
           | { status: false; message?: string };
