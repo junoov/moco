@@ -26,14 +26,7 @@ export function MobileNav() {
             All
           </span>
         </Link>
-        <Link href="/genres" className="flex flex-col items-center gap-1 w-16">
-          <div className={`p-1 rounded-full ${pathname === "/genres" ? "text-blue-500" : "text-gray-500 hover:text-gray-400"}`}>
-            <Tag size={22} strokeWidth={pathname === "/genres" ? 2.5 : 2} />
-          </div>
-          <span className={`text-[10px] font-medium ${pathname === "/genres" ? "text-blue-500" : "text-gray-500"}`}>
-            Genre
-          </span>
-        </Link>
+
         <Link href="/bookmarks" className="flex flex-col items-center gap-1 w-16 relative">
           <div className={`p-1 rounded-full ${pathname === "/bookmarks" ? "text-blue-500" : "text-gray-500 hover:text-gray-400"}`}>
             <Bookmark size={22} strokeWidth={pathname === "/bookmarks" ? 2.5 : 2} />
