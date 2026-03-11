@@ -133,13 +133,13 @@ export default function ChapterReaderPage({
       </div>
 
       {/* Reader Strip */}
-      <div className="reader-strip my-4 shadow-2xl">
+      <div className="reader-strip shadow-2xl">
         {data.images.map((img, idx) => (
-          <div key={idx} className="relative w-full aspect-[2/3] bg-[#0c1219] flex items-center justify-center text-[var(--line-soft)] border-b border-[#000]">
+          <div key={idx} className="relative w-full bg-[#0c1219]">
              {/* Base loading skeleton / grid before image loads completely */}
             <div className="absolute inset-0 bg-[#0c1219] flex items-center justify-center -z-10" 
                  style={{ backgroundImage: "radial-gradient(#151e2b 1px, transparent 1px)", backgroundSize: "20px 20px" }}>
-               <span className="font-mono text-xs opacity-50">Page {idx + 1}</span>
+               <span className="font-mono text-xs opacity-30">Page {idx + 1}</span>
             </div>
             
             <img

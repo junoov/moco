@@ -228,10 +228,7 @@ a {
 .reader-strip {
   width: min(980px, 100%);
   margin: 0 auto;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: #080b10;
+  background: #000;
   line-height: 0;
 }
 
