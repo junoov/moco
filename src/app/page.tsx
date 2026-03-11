@@ -42,6 +42,7 @@ function ComicCard({ comic }: { comic: Comic }) {
           src={proxyImage(comic.coverUrl)}
           alt={comic.title}
           loading="lazy"
+          decoding="async"
           className="comic-card__img"
         />
 

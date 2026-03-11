@@ -146,7 +146,9 @@ export default function ChapterReaderPage({
               src={proxyImage(img)}
               alt={`Page ${idx + 1}`}
               className="w-full h-auto block"
-              loading={idx < 3 ? "eager" : "lazy"} 
+              loading={idx < 3 ? "eager" : "lazy"}
+              decoding={idx < 3 ? "sync" : "async"}
+              fetchPriority={idx === 0 ? "high" : "auto"}
               onError={(e) => {
                  (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMDkxMjE5IiBzdHJva2U9IiMyMDMwNDQiIHN0cm9rZS13aWR0aD0iMSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjUiIGZpbGw9IiM4ZDljYWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBGYWlsZWQ8L3RleHQ+PC9zdmc+';
               }}

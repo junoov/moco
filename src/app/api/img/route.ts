@@ -22,8 +22,9 @@ export async function GET(request: NextRequest) {
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         Referer: process.env.TARGET_DOMAIN || "https://komiku.org",
         Accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+        "Accept-Encoding": "gzip, deflate, br",
       },
-      timeout: 10000, 
+      timeout: 8000, 
     });
 
     // 2. Tentukan format gambarnya apa (jpeg, png, webp, dll)
@@ -34,10 +35,10 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         "Content-Type": contentType,
-        // Cache gambar di browser user selama 1 hari biar web makin ngebut
-        "Cache-Control": "public, max-age=86400, stale-while-revalidate=43200", 
-        // Mengizinkan web kita membaca gambar ini 
+        // Cache 7 hari + stale-while-revalidate 1 hari
+        "Cache-Control": "public, max-age=604800, stale-while-revalidate=86400, immutable",
         "Access-Control-Allow-Origin": "*",
+        "Vary": "Accept",
       },
     });
   } catch (error: any) {

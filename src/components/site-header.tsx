@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { SearchBar } from "./search-bar";
+import dynamic from "next/dynamic";
+
+const SearchBar = dynamic(() => import("./search-bar").then(m => ({ default: m.SearchBar })), {
+  ssr: false,
+  loading: () => (
+    <button className="w-10 h-10 rounded-full bg-[var(--bg-2)] flex items-center justify-center text-[var(--text-dim)]" aria-label="Search loading">
+      <Search size={18} />
+    </button>
+  ),
+});
 
 export function SiteHeader() {
   return (

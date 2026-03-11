@@ -369,11 +369,13 @@ a {
   color: inherit;
   transition: transform 200ms ease, box-shadow 200ms ease;
   cursor: pointer;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300px;
 }
 
 .comic-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-hover, 0 12px 20px -5px rgba(0, 0, 0, 0.3));
 }
 
 .comic-card__cover {
@@ -622,4 +624,20 @@ a {
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* ====== Reduced Motion (Accessibility + Performance) ====== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .stagger {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
 }
