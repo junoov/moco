@@ -9,9 +9,10 @@ export function SiteHeader() {
         {/* Brand Logo */}
         <Link 
           href="/" 
-          className="font-black text-2xl tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500 hover:opacity-80 transition-opacity"
+          className="font-black text-2xl tracking-widest uppercase flex items-center gap-1 hover:opacity-80 transition-opacity"
         >
-          MOCO
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-500">MOCO</span>
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-gray-200 to-gray-400">KOMIK</span>
         </Link>
         
         {/* Right Actions */}

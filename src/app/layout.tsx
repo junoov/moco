@@ -18,7 +18,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 import { MobileNav } from "@/components/mobile-nav";
 
 export const metadata: Metadata = {
-  title: "KIRYUU Clone",
+  title: "MOCO KOMIK",
   description: "Live-scraped manga reader built with Next.js",
 };
 
