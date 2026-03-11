@@ -1,21 +1,19 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
+import { Chakra_Petch, Outfit } from "next/font/google";
 import "./globals.css";
-import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-});
-
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
-  weight: ["400", "500", "600"],
-  subsets: ["latin"],
-});
-
 import { MobileNav } from "@/components/mobile-nav";
+
+const displayFont = Chakra_Petch({
+  variable: "--font-display",
+  weight: ["300", "400", "500", "600", "700"],
+  subsets: ["latin"],
+});
+
+const bodyFont = Outfit({
+  variable: "--font-body",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "MOCO KOMIK",
@@ -28,15 +26,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${spaceGrotesk.variable} ${ibmPlexMono.variable} antialiased`}
-      >
-        <div className="flex flex-col min-h-screen bg-[#0a0e17] text-gray-200 pb-20">
-          <SiteHeader />
-          <main className="flex-1 w-full max-w-[1200px] mx-auto px-4">{children}</main>
-          <MobileNav />
-        </div>
+    <html lang="id" className={`${displayFont.variable} ${bodyFont.variable}`}>
+      <body className="antialiased min-h-screen relative overflow-x-hidden selection:bg-accent selection:text-black pb-20 md:pb-0">
+        <div className="noise-bg pointer-events-none fixed inset-0 z-[-1]"></div>
+        <div className="grid-bg pointer-events-none fixed inset-0 z-[-2]"></div>
+        <SiteHeader />
+        <main className="w-full max-w-[1240px] mx-auto px-4 sm:px-6 z-10 relative">
+          {children}
+        </main>
+        <MobileNav />
       </body>
     </html>
   );
