@@ -4,15 +4,15 @@ import { SearchBar } from "./search-bar";
 
 export function SiteHeader() {
   return (
-    <header className="site-header sticky top-0 bg-[#0a0e17] z-50 border-b border-gray-800">
-      <div className="site-header__inner px-4 py-3 flex items-center justify-between">
+    <header className="sticky top-0 z-50 bg-[var(--bg-0)]/70 backdrop-blur-xl border-b border-[var(--line-soft)] transition-all">
+      <div className="w-full max-w-[1240px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
         {/* Brand Logo */}
         <Link 
           href="/" 
-          className="font-black text-2xl tracking-widest uppercase flex items-center gap-1 hover:opacity-80 transition-opacity"
+          className="font-[family-name:var(--font-heading)] font-extrabold text-2xl tracking-wide flex items-center gap-1.5 hover:opacity-80 transition-opacity"
         >
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-500">MOCO</span>
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-gray-200 to-gray-400">KOMIK</span>
+          <span className="text-[var(--accent)] tracking-tighter">MOCO</span>
+          <span className="text-[var(--text-strong)] tracking-wider">KOMIK</span>
         </Link>
         
         {/* Right Actions */}

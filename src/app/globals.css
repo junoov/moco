@@ -1,42 +1,44 @@
 @import "tailwindcss";
 
 :root {
-  --bg-0: #0a0e17;
-  --bg-1: #0f1523;
-  --bg-2: #161e2e;
-  --panel: #101726;
-  --panel-raised: #1e293b;
-  --line: #1e293b;
-  --line-soft: rgba(30, 41, 59, 0.7);
-  --text-strong: #ffffff;
-  --text-base: #cbd5e1;
-  --text-dim: #64748b;
-  --text: var(--text-base);
-  --text-muted: var(--text-dim);
-  --accent: #3b82f6;
-  --accent-soft: #60a5fa;
+  --bg-0: #09090b; /* Zinc 950 */
+  --bg-1: #18181b; /* Zinc 900 */
+  --bg-2: #27272a; /* Zinc 800 */
+  
+  --panel: rgba(24, 24, 27, 0.6);
+  --panel-raised: rgba(39, 39, 42, 0.8);
+  
+  --line: #27272a;
+  --line-soft: rgba(39, 39, 42, 0.4);
+  
+  --text-strong: #fafafa;
+  --text-base: #a1a1aa; /* Zinc 400 */
+  --text-dim: #71717a; /* Zinc 500 */
+  
+  --accent: #3b82f6; /* Modern Blue */
+  --accent-soft: rgba(59, 130, 246, 0.15);
+  
   --success: #10b981;
   --warning: #f59e0b;
-  --surface: var(--bg-1);
-  --border: var(--line);
-  --border-subtle: var(--line-soft);
   
-  /* Badges */
+  /* Refined Badges */
   --manhwa-badge: #8b5cf6;
-  --manhua-badge: #0ea5e9;
-  --manga-badge: #f43f5e;
+  --manhua-badge: #eab308;
+  --manga-badge: #ef4444;
 
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --radius-xl: 12px;
-  --radius-lg: 8px;
-  --radius-md: 6px;
+  --shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 10px 30px -4px rgba(0, 0, 0, 0.6);
+  
+  --radius-xl: 16px;
+  --radius-lg: 12px;
+  --radius-md: 8px;
 }
 
 @theme inline {
   --color-background: var(--bg-0);
   --color-foreground: var(--text-base);
-  --font-sans: var(--font-space-grotesk);
-  --font-mono: var(--font-ibm-plex-mono);
+  --font-sans: var(--font-sans), system-ui, sans-serif;
+  --font-heading: var(--font-heading), system-ui, sans-serif;
 }
 
 body {
@@ -44,9 +46,12 @@ body {
   margin: 0;
   color: var(--text-base);
   background-color: var(--bg-0);
-  font-family: var(--font-space-grotesk), "Trebuchet MS", sans-serif;
-  line-height: 1.4;
+  line-height: 1.5;
   overflow-x: clip;
+}
+
+h1, h2, h3, h4, .section-title, .brand__text, .cta, .comic-card__badge, .filter-btn {
+  font-family: var(--font-heading), system-ui, sans-serif;
 }
 
 a {
@@ -456,6 +461,7 @@ a {
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   min-height: 2.2rem;

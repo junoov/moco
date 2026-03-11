@@ -1,21 +1,19 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-});
-
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
-  weight: ["400", "500", "600"],
-  subsets: ["latin"],
-});
-
 import { MobileNav } from "@/components/mobile-nav";
+
+const inter = Inter({
+  variable: "--font-sans",
+  subsets: ["latin"],
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-heading",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "MOCO KOMIK",
@@ -28,13 +26,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${spaceGrotesk.variable} ${ibmPlexMono.variable} antialiased`}
-      >
-        <div className="flex flex-col min-h-screen bg-[#0a0e17] text-gray-200 pb-20">
+    <html lang="id" className={`${inter.variable} ${plusJakartaSans.variable}`}>
+      <body className="antialiased min-h-screen bg-[var(--bg-0)] text-[var(--text-base)] pb-20 md:pb-0 font-sans selection:bg-blue-500/30 selection:text-white">
+        <div className="flex flex-col min-h-screen">
           <SiteHeader />
-          <main className="flex-1 w-full max-w-[1200px] mx-auto px-4">{children}</main>
+          <main className="flex-1 w-full max-w-[1240px] mx-auto px-4 sm:px-6 md:px-8 mt-4 md:mt-8">
+            {children}
+          </main>
           <MobileNav />
         </div>
       </body>
