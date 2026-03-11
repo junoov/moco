@@ -98,15 +98,23 @@ export function ComicFilterClient({
   mangaList: Comic[];
 }) {
   const [activeFilter, setActiveFilter] = useState("Terbaru");
+  const [showAll, setShowAll] = useState(false);
   const filters = ["Terbaru", "19+", "Populer", "Manga", "Manhwa", "Manhua"];
 
   const filteredComics = useMemo(() => {
-    if (activeFilter === "Manga") return mangaList;
-    if (activeFilter === "Manhwa") return manhwa;
-    if (activeFilter === "Manhua") return manhua;
-    // For Terbaru, 19+, and Populer, we just show all components for now
-    // until the backend is updated to support these specific queries.
-    return allComics;
+    let list: Comic[];
+    if (activeFilter === "Manga") list = mangaList;
+    else if (activeFilter === "Manhwa") list = manhwa;
+    else if (activeFilter === "Manhua") list = manhua;
+    else list = allComics;
+    return showAll ? list : list.slice(0, 18);
+  }, [activeFilter, allComics, manhwa, manhua, mangaList, showAll]);
+
+  const totalCount = useMemo(() => {
+    if (activeFilter === "Manga") return mangaList.length;
+    if (activeFilter === "Manhwa") return manhwa.length;
+    if (activeFilter === "Manhua") return manhua.length;
+    return allComics.length;
   }, [activeFilter, allComics, manhwa, manhua, mangaList]);
 
   return (
@@ -115,7 +123,7 @@ export function ComicFilterClient({
         {filters.map((f) => (
           <button
             key={f}
-            onClick={() => setActiveFilter(f)}
+            onClick={() => { setActiveFilter(f); setShowAll(false); }}
             className="filter-btn flex-shrink-0"
             data-active={activeFilter === f}
           >
@@ -138,6 +146,18 @@ export function ComicFilterClient({
           <ComicCard key={comic.slug} comic={comic} />
         ))}
       </div>
+
+      {!showAll && totalCount > 18 && (
+        <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
+          <button
+            onClick={() => setShowAll(true)}
+            className="cta cta--ghost"
+            style={{ minHeight: "2.4rem", padding: "0.4rem 1.6rem", fontSize: "0.85rem" }}
+          >
+            Tampilkan Lebih ({totalCount - 18} lagi)
+          </button>
+        </div>
+      )}
     </section>
   );
 }
