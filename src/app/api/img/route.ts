@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
 
 export const dynamic = "force-dynamic"; // Tidak di cache Vercel secara statik
 export const revalidate = 86400; // Cache header CDN 1 hari
@@ -13,29 +12,34 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // 1. Download gambar dari target dengan memalsukan User-Agent dan Referer
-    // Supaya komiku.org berpikir yang akses adalah web asli/browser asli, bukan robot/laman eksternal
-    const response = await axios.get(imageUrl, {
-      responseType: "arraybuffer", // Kita butuh data mentah (binary/buffer) gambarnya
+    // Menggunakan Native fetch (Stream) alih-alih axios (Buffer).
+    // fetch mengembalikan stream secara langsung jadi RAM Node.js kita sangat lega!
+    const response = await fetch(imageUrl, {
+      method: "GET",
+      // Memalsukan header untuk melewati proteksi bot Komiku
       headers: {
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         Referer: process.env.TARGET_DOMAIN || "https://komiku.org",
         Accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
-        "Accept-Encoding": "gzip, deflate, br",
       },
-      timeout: 8000, 
+      // Gunakan ini untuk abort fetch jika sumber sangat lambat (Opsional 8 detik)
+      signal: AbortSignal.timeout(8000),
     });
 
-    // 2. Tentukan format gambarnya apa (jpeg, png, webp, dll)
-    const contentType = response.headers["content-type"] || "image/jpeg";
+    if (!response.ok || !response.body) {
+      throw new Error(`Failed to fetch image: ${response.statusText}`);
+    }
 
-    // 3. Kembalikan data mentah tersebut beserta header keamanan agar bisa ditampilkan di tag <img> kita
-    return new NextResponse(response.data, {
+    const contentType = response.headers.get("content-type") || "image/jpeg";
+
+    // Langsung mengalirkan (piping) stream asli ke Response Next.js!
+    // Tidak ada "arrayBuffer()" yang memfokuskan memori. Super cepat mirip konsep GO.
+    return new NextResponse(response.body, {
       status: 200,
       headers: {
         "Content-Type": contentType,
-        // Cache 7 hari + stale-while-revalidate 1 hari
+        // Cache 7 hari + stale-while-revalidate 1 hari (Untuk CDN Cloudflare/Vercel Edge)
         "Cache-Control": "public, max-age=604800, stale-while-revalidate=86400, immutable",
         "Access-Control-Allow-Origin": "*",
         "Vary": "Accept",
