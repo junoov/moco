@@ -1,29 +1,29 @@
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import { Search, LogIn } from "lucide-react";
 import { SearchBar } from "./search-bar";
 
 export function SiteHeader() {
   return (
-    <header className="site-header">
-      <div className="site-header__inner site-header__inner--layout">
-        <Link href="/" className="brand hover:opacity-90 transition-opacity">
-          <div className="brand__glyph">
-            <BookOpen size={20} color="#090d12" />
-          </div>
-          <div className="brand__text">
-            <strong>MangaReader</strong>
-            <small>Live Komiku Scraper</small>
-          </div>
+    <header className="site-header sticky top-0 bg-[#0a0e17] z-50 border-b border-gray-800">
+      <div className="site-header__inner px-4 py-3 flex items-center justify-between">
+        {/* Brand Logo */}
+        <Link href="/" className="font-black text-2xl tracking-tighter text-blue-500 hover:text-blue-400 transition-colors uppercase" style={{ fontFamily: "Impact, sans-serif" }}>
+          KIRYUU
         </Link>
-        <nav className="site-header__nav">
-          <SearchBar />
-          <div className="site-header__links">
-            <Link href="/" className="muted hover:text-[var(--text-strong)] transition-colors text-sm font-medium">Home</Link>
-            <Link href="/comics" className="muted hover:text-[var(--text-strong)] transition-colors text-sm font-medium">Comics</Link>
-            <Link href="/bookmarks" className="muted hover:text-[var(--text-strong)] transition-colors text-sm font-medium">Bookmarks</Link>
-            <Link href="/history" className="muted hover:text-[var(--text-strong)] transition-colors text-sm font-medium">History</Link>
-          </div>
-        </nav>
+        
+        {/* Right Actions */}
+        <div className="flex items-center gap-3">
+          {/* Search Button (Mobile/Desktop) */}
+          <button className="w-10 h-10 rounded-full bg-[#161e2e] flex items-center justify-center text-gray-400 hover:text-white transition-colors" aria-label="Search">
+            <Search size={18} />
+          </button>
+          
+          {/* Login Button */}
+          <button className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold text-sm px-4 py-2 rounded-lg transition-colors">
+            <LogIn size={16} />
+            <span>Masuk</span>
+          </button>
+        </div>
       </div>
     </header>
   );
