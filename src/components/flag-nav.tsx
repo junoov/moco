@@ -4,27 +4,24 @@ import Link from "next/link";
 
 export function FlagNav() {
   const flags = [
-    { name: "Manga", emoji: "🇯🇵", href: "/comics?type=Manga", accent: "var(--manga-badge)" },
-    { name: "Manhwa", emoji: "🇰🇷", href: "/comics?type=Manhwa", accent: "var(--manhwa-badge)" },
-    { name: "Manhua", emoji: "🇨🇳", href: "/comics?type=Manhua", accent: "var(--manhua-badge)" },
+    { name: "Manga", emoji: "🇯🇵", href: "/comics?type=Manga" },
+    { name: "Manhwa", emoji: "🇰🇷", href: "/comics?type=Manhwa" },
+    { name: "Manhua", emoji: "🇨🇳", href: "/comics?type=Manhua" },
   ];
 
   return (
-    <div className="panel p-0 mb-8 stagger overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#00f0ff] via-[#ff00ea] to-[#ff3333] z-10"></div>
-      <div className="flex divide-x divide-[var(--line)] relative z-0">
+    <div className="bg-[#0f1523] border border-gray-800 rounded-xl overflow-hidden mb-6">
+      <div className="flex divide-x divide-gray-800">
         {flags.map((flag) => (
           <Link
             key={flag.name}
             href={flag.href}
-            className="flex-1 flex flex-col items-center justify-center py-6 transition-all duration-300 group hover:bg-[var(--bg-1)] relative"
+            className="flex-1 flex flex-col items-center justify-center py-4 hover:bg-white/5 transition-colors group"
           >
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none" 
-                 style={{ background: `radial-gradient(circle at center, ${flag.accent} 0%, transparent 70%)` }} />
-            <span className="text-4xl mb-2 group-hover:scale-125 group-hover:-translate-y-1 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] filter grayscale-[0.2] group-hover:grayscale-0">
+            <span className="text-3xl mb-1 group-hover:scale-110 transition-transform">
               {flag.emoji}
             </span>
-            <span className="font-display text-xs lg:text-sm font-bold text-[var(--text-dim)] group-hover:text-white uppercase tracking-widest transition-colors">
+            <span className="text-base font-bold text-gray-200 tracking-wide">
               {flag.name}
             </span>
           </Link>
