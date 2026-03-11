@@ -17,10 +17,8 @@ export function SiteHeader() {
         
         {/* Right Actions */}
         <div className="flex items-center gap-3">
-          {/* Search Button (Mobile/Desktop) */}
-          <button className="w-10 h-10 rounded-full bg-[#161e2e] flex items-center justify-center text-gray-400 hover:text-white transition-colors" aria-label="Search">
-            <Search size={18} />
-          </button>
+          {/* Search Box */}
+          <SearchBar />
         </div>
       </div>
     </header>

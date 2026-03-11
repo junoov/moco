@@ -606,7 +606,7 @@ export async function searchComics(query: string): Promise<Comic[]> {
     const term = cleanText(query);
     if (!term) return [];
 
-    const url = `${API_DOMAIN}/?post_type=manga&s=${encodeURIComponent(term)}`;
+    const url = `${TARGET_DOMAIN}/?s=${encodeURIComponent(term)}`;
     const html = await fetchHtml(url);
     return dedupeComics(parseBgeCards(html));
   } catch (error) {
